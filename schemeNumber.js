@@ -4804,9 +4804,11 @@ function implementNativeInexactReal(plugins) {
     var Flonum = NativeInexactReal;
 
     var INEXACT_ZERO = new NativeInexactReal(0);
+    var INEXACT_NEGATIVE_ZERO = new NativeInexactReal(-0);
     function nativeToInexact(x) {
         //assert(typeof x === "number");
-        return (x === 0 ? INEXACT_ZERO : new NativeInexactReal(x));
+        return (x === 0 ? (1/x === -Infinity ? INEXACT_NEGATIVE_ZERO : INEXACT_ZERO) :
+                          new NativeInexactReal(x));
     }
 
     function parseInexact(sign, string) {
@@ -5045,7 +5047,8 @@ function implementNativeFlonumLibrary(plugins) {
             return (t > 0 ? "+inf.0" : "-inf.0");
         }
 
-        var s = Number_toString(t);
+        var s = t === 0 ? (1/t === -Infinity ? "-0" : "0") :
+                          Number_toString(t);
 
         if (String_indexOf(s, '.') === -1) {
             // Force the result to contain a decimal point as per R6RS.
